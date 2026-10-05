@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Data / outputs / logs / weights (not tracked)
+data/msd/
+data/msd_2d/
+data/busi/
+**/outputs/
+**/logs/
+**/wandb/
+*.pth
+*.pt
+*.ckpt
+*.npz
+
+# Figures / caches
+figs/
+.cache/
+*.log
+
+# OS
+.DS_Store

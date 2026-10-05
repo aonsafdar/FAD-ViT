@@ -1,0 +1,10 @@
+torch>=1.10
+torchvision
+nibabel
+numpy
+scipy
+scikit-learn
+matplotlib
+medpy
+einops
+timm

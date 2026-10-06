@@ -8,7 +8,7 @@
 #SBATCH --output=logs/%x_%j.out
 #SBATCH --error=logs/%x_%j.err
 
-# Benchmark: 3 backbones (CvT13, ViT-base, DINOv2) on one MSD task.
+# Benchmark: 3 backbones (FADViT, ViT-base, DINOv2) on one MSD task.
 # Usage: set TASK then sbatch benchmark_msd_task.slurm
 #   export TASK=Task07_Pancreas && sbatch benchmark_msd_task.slurm
 #   export TASK=Task03_Liver   && sbatch benchmark_msd_task.slurm
@@ -51,9 +51,9 @@ echo "=== Benchmark: $TASK (num_classes=$NC) ==="
 echo "Early stopping: $EARLY_STOP epochs | Max epochs: $EPOCHS"
 echo ""
 
-echo "[1/3] CvT13-UNet (modified)..."
-$PY train.py --model cvt13_unet --task $TASK --data $DATA --num-classes $NC \
-  --cvt13-weights $WEIGHTS --epochs $EPOCHS --early-stop $EARLY_STOP \
+echo "[1/3] FADViT-UNet (modified)..."
+$PY train.py --model fadvit_unet --task $TASK --data $DATA --num-classes $NC \
+  --fadvit-weights $WEIGHTS --epochs $EPOCHS --early-stop $EARLY_STOP \
   --output $OUT --wandb --wandb-project Segmentation
 
 echo "[2/3] ViT-Base-UNet (ImageNet-1k)..."
@@ -68,4 +68,4 @@ $PY train.py --model dinov2_unet --task $TASK --data $DATA --num-classes $NC \
 
 echo ""
 echo "=== Benchmark complete: $TASK ==="
-echo "Results in $OUT/$TASK/{cvt13_unet,vit_base_unet,dinov2_unet}/best.pth"
+echo "Results in $OUT/$TASK/{fadvit_unet,vit_base_unet,dinov2_unet}/best.pth"

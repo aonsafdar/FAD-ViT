@@ -10,7 +10,7 @@
 #   Single extra dataset:
 #     sbatch run_linear_probe_locked_lr.slurm --export=DATASET=dermamnist
 #
-# Locked LRs: fraction 0.01 -> 1e-3, 0.1 -> 1e-3, 1.0 -> 1e-4 (from cvt13-mod PathMNIST).
+# Locked LRs: fraction 0.01 -> 1e-3, 0.1 -> 1e-3, 1.0 -> 1e-4 (from fadvit PathMNIST).
 #SBATCH --job-name=cls_medmnist
 #SBATCH --partition=csgpu
 #SBATCH --gres=gpu:1
@@ -36,7 +36,7 @@ OUT_ROOT="${OUT_ROOT:-$ROOT/outputs/classification_linear_probe_locked_lr}"
 
 # Datasets to run (default: 3 for speed; add pathmnist only if re-running)
 DATASETS="${DATASETS:-organamnist tissuemnist}"
-MODELS="${MODELS:-cvt13-mod vit-s16 dinov2-base}"
+MODELS="${MODELS:-fadvit vit-s16 dinov2-base}"
 FRACTIONS="${FRACTIONS:-0.01 0.1 1.0}"
 
 get_lr_for_fraction() {
@@ -55,14 +55,14 @@ BATCH_SIZE="${BATCH_SIZE:-128}"
 OPTIMIZER="${OPTIMIZER:-adamw}"
 WEIGHT_DECAY="${WEIGHT_DECAY:-1e-4}"
 SEED="${SEED:-0}"
-CVT13_WEIGHTS="${CVT13_WEIGHTS:-$ROOT/weights/model_best.pth}"
+FADVIT_WEIGHTS="${FADVIT_WEIGHTS:-$ROOT/weights/model_best.pth}"
 RUN_AGGREGATE="${RUN_AGGREGATE:-1}"
 PLOT_TITLE="${PLOT_TITLE:-Linear Probe (locked LR, 9 runs/dataset)}"
 
 mkdir -p "$OUT_ROOT" "$EXP_ROOT/logs"
 
-if [ ! -f "$CVT13_WEIGHTS" ]; then
-  echo "ERROR: CvT13 weights missing: $CVT13_WEIGHTS" >&2
+if [ ! -f "$FADVIT_WEIGHTS" ]; then
+  echo "ERROR: FADViT weights missing: $FADVIT_WEIGHTS" >&2
   exit 2
 fi
 
@@ -98,7 +98,7 @@ for DATASET in $DATASETS; do
         --warmup-epochs "$WARMUP_EPOCHS" \
         --early-stop "$EARLY_STOP" \
         --seed "$SEED" \
-        --cvt13-weights "$CVT13_WEIGHTS" \
+        --fadvit-weights "$FADVIT_WEIGHTS" \
         --output "$RUN_OUT"
     done
   done

@@ -8,12 +8,12 @@ Use --split to select which set (train/val/test). Select image per dataset with 
 or --sample-indices TASK=INDEX (e.g. BUSI=0 Task07_Pancreas=5). Publication quality (300 DPI, optional PDF).
 
 Usage:
-  # Ours-UNet (CvT13), test set (default), first sample per dataset
-  python scripts/one_model_all_datasets.py --model cvt13_unet \\
+  # Ours-UNet (FADViT), test set (default), first sample per dataset
+  python scripts/one_model_all_datasets.py --model fadvit_unet \\
     --output ./outputs/one_model_datasets --dpi 300 --format pdf
 
   # Different image index per dataset
-  python scripts/one_model_all_datasets.py --model cvt13_unet \\
+  python scripts/one_model_all_datasets.py --model fadvit_unet \\
     --sample-indices BUSI=10 Task07_Pancreas=2 Task09_Spleen=0 \\
     --output ./outputs/one_model_datasets
 
@@ -31,9 +31,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from data import get_dataset
 from visualization import save_one_model_across_datasets
 
-MODELS = ["cvt13_unet", "vit_base_unet", "dinov2_unet"]
-# Display name for figures/prints (e.g. "Ours-UNet" for cvt13_unet)
-MODEL_DISPLAY_NAMES = {"cvt13_unet": "Ours-UNet", "vit_base_unet": "ViT-UNet", "dinov2_unet": "DINOv2-UNet"}
+MODELS = ["fadvit_unet", "vit_base_unet", "dinov2_unet"]
+# Display name for figures/prints (e.g. "Ours-UNet" for fadvit_unet)
+MODEL_DISPLAY_NAMES = {"fadvit_unet": "Ours-UNet", "vit_base_unet": "ViT-UNet", "dinov2_unet": "DINOv2-UNet"}
 
 ALL_TASKS = [
     "BUSI",
@@ -62,9 +62,9 @@ DATASET_LABELS = {
 
 
 def get_model(model_name: str, in_chans: int, num_classes: int):
-    if model_name == "cvt13_unet":
-        from models import CvT13UNet
-        return CvT13UNet(in_chans=in_chans, num_classes=num_classes, pretrained_path="")
+    if model_name == "fadvit_unet":
+        from models import FADViTUNet
+        return FADViTUNet(in_chans=in_chans, num_classes=num_classes, pretrained_path="")
     elif model_name == "vit_base_unet":
         from models import ViTBaseUNet
         return ViTBaseUNet(in_chans=in_chans, num_classes=num_classes, pretrained=False)
@@ -79,7 +79,7 @@ def main():
         description="One model across datasets: rows=Original|GT|Prediction|Error, cols=datasets"
     )
     parser.add_argument("--model", type=str, required=True, choices=MODELS,
-                        help="Model to visualize (cvt13_unet, vit_base_unet, dinov2_unet)")
+                        help="Model to visualize (fadvit_unet, vit_base_unet, dinov2_unet)")
     parser.add_argument("--tasks", nargs="+", default=None,
                         help="Datasets to include (default: all). e.g. BUSI Task07_Pancreas ...")
     parser.add_argument("--data", type=str, default="./data/msd_2d", help="Data path for MSD tasks")

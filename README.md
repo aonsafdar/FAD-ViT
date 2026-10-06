@@ -21,9 +21,9 @@ fraction of the parameters and compute of standard spatial transformers.
 ```
 FAD-ViT/
 ├── backbone/          # Core FAD-ViT model (classification backbone)
-│   ├── mod_cvt.py           # axis-decoupled, channel-primary ViT
-│   ├── cvt13_encoder.py     # encoder wrapper (loads optional pretrained weights)
-│   └── cvt13_unet.py        # FAD-ViT-UNet (encoder + U-Net decoder)
+│   ├── fadvit_backbone.py           # axis-decoupled, channel-primary ViT
+│   ├── fadvit_encoder.py     # encoder wrapper (loads optional pretrained weights)
+│   └── fadvit_unet.py        # FAD-ViT-UNet (encoder + U-Net decoder)
 ├── segmentation/      # Segmentation transfer (BUSI + 10 MSD-derived 2D tasks)
 │   ├── train.py             # unified training entry point (all backbones)
 │   ├── eval_test.py         # held-out test evaluation
@@ -65,9 +65,9 @@ GitHub Releases / Hugging Face. Point the training code at it:
 
 ```bash
 # segmentation
-python segmentation/train.py --model cvt13_unet --cvt13-weights /path/to/model_best.pth ...
+python segmentation/train.py --model fadvit_unet --fadvit-weights /path/to/model_best.pth ...
 # backbone
-python -c "from backbone.cvt13_unet import CvT13UNet; CvT13UNet(pretrained_path='/path/to/model_best.pth')"
+python -c "from backbone.fadvit_unet import FADViTUNet; FADViTUNet(pretrained_path='/path/to/model_best.pth')"
 ```
 
 Use `--scratch` to train the FAD-ViT backbone from random initialization (the from-scratch control).
@@ -98,19 +98,19 @@ to `ImageFolder` layout at 224×224); see `classification/README.md`.
 ```bash
 cd segmentation
 # FAD-ViT (feature axis, default) — pretrained transfer
-python train.py --model cvt13_unet --token-mode channel --task Task02_Heart \
-    --data ./data/msd_2d --cvt13-weights /path/to/model_best.pth --epochs 100 --early-stop 15
+python train.py --model fadvit_unet --token-mode channel --task Task02_Heart \
+    --data ./data/msd_2d --fadvit-weights /path/to/model_best.pth --epochs 100 --early-stop 15
 # spatial-axis ablation (same skeleton, attention over spatial tokens)
-python train.py --model cvt13_unet --token-mode spatial  ...
+python train.py --model fadvit_unet --token-mode spatial  ...
 # single-factor control: identical channel-mode Q/K/V, only the pooling axis flipped
-python train.py --model cvt13_unet --token-mode spatial_matched ...
+python train.py --model fadvit_unet --token-mode spatial_matched ...
 # matched-capacity spatial baseline and other encoders
 python train.py --model vit_small_unet ...      # ViT-S/16 (22.9M, matched)
 python train.py --model {vit_base_unet,dinov2_unet,xcit_unet,davit_unet,resnet50_unet,unet} ...
 # disable the spatial-attention tail (23.1M -> 16.4M)
-python train.py --model cvt13_unet --sa-tail-depth-last 0 ...
+python train.py --model fadvit_unet --sa-tail-depth-last 0 ...
 # held-out test evaluation
-python eval_test.py --model cvt13_unet --task Task02_Heart --checkpoint outputs/.../best.pth
+python eval_test.py --model fadvit_unet --task Task02_Heart --checkpoint outputs/.../best.pth
 ```
 
 `--token-mode {channel|spatial|spatial_matched}` selects the attention axis;

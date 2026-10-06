@@ -50,9 +50,9 @@ for TASK in Task02_Heart Task06_Lung; do
   echo "Early stopping: $EARLY_STOP epochs | Max epochs: $EPOCHS"
   echo ""
 
-  echo "[1/3] Ours-UNet (CvT13)..."
-  $PY train.py --model cvt13_unet --task $TASK --data $DATA --num-classes $NC \
-    --cvt13-weights $WEIGHTS --epochs $EPOCHS --early-stop $EARLY_STOP \
+  echo "[1/3] Ours-UNet (FADViT)..."
+  $PY train.py --model fadvit_unet --task $TASK --data $DATA --num-classes $NC \
+    --fadvit-weights $WEIGHTS --epochs $EPOCHS --early-stop $EARLY_STOP \
     --output $OUT --wandb --wandb-project Segmentation
 
   echo "[2/3] ViT-UNet..."
@@ -71,5 +71,5 @@ done
 
 echo ""
 echo "=== All benchmarks complete: Task02_Heart, Task06_Lung ==="
-echo "Checkpoints: $OUT/Task02_Heart/{cvt13_unet,vit_base_unet,dinov2_unet}/best.pth"
-echo "             $OUT/Task06_Lung/{cvt13_unet,vit_base_unet,dinov2_unet}/best.pth"
+echo "Checkpoints: $OUT/Task02_Heart/{fadvit_unet,vit_base_unet,dinov2_unet}/best.pth"
+echo "             $OUT/Task06_Lung/{fadvit_unet,vit_base_unet,dinov2_unet}/best.pth"

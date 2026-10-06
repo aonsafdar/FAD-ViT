@@ -729,37 +729,37 @@ class ConvolutionalVisionTransformer(nn.Module):
         return layers
 
     def forward_features(self, x):
-        _p("CvT.forward_features.in", x)
+        _p("FADViT.forward_features.in", x)
         for i in range(self.num_stages):
-            _p(f"CvT.stage[{i}].in", x)
+            _p(f"FADViT.stage[{i}].in", x)
             x, cls_tokens = getattr(self, f'stage{i}')(x)
             if cls_tokens is not None:
-                _p(f"CvT.stage[{i}].cls", cls_tokens)
-            _p(f"CvT.stage[{i}].out", x)
+                _p(f"FADViT.stage[{i}].cls", cls_tokens)
+            _p(f"FADViT.stage[{i}].out", x)
 
-        _p("CvT.before_head_prep.in", x)
+        _p("FADViT.before_head_prep.in", x)
         if self.cls_token:
             x = self.norm(cls_tokens)
-            _p("CvT.norm_cls", x)
+            _p("FADViT.norm_cls", x)
             x = torch.squeeze(x)
-            _p("CvT.squeeze_cls", x)
+            _p("FADViT.squeeze_cls", x)
         else:
-            _p("CvT.tokens_no_cls", x)
+            _p("FADViT.tokens_no_cls", x)
             x = rearrange(x, 'b c h w -> b (h w) c')
-            _p("CvT.tokens_flat", x)
+            _p("FADViT.tokens_flat", x)
             x = self.norm(x)
-            _p("CvT.tokens_norm", x)
+            _p("FADViT.tokens_norm", x)
             x = torch.mean(x, dim=1)
-            _p("CvT.tokens_gap", x)
+            _p("FADViT.tokens_gap", x)
 
         return x
 
     def forward(self, x):
-        _p("CvT.forward.in", x)
+        _p("FADViT.forward.in", x)
         x = self.forward_features(x)
-        _p("CvT.forward.features", x)
+        _p("FADViT.forward.features", x)
         x = self.head(x)
-        _p("CvT.head", x)
+        _p("FADViT.head", x)
 
         return x
 

@@ -38,7 +38,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from data import get_dataset
 from visualization import save_datasets_comparison, save_comparison_figure, save_comparison_grid
 
-MODELS = ["cvt13_unet", "vit_base_unet", "dinov2_unet"]
+MODELS = ["fadvit_unet", "vit_base_unet", "dinov2_unet"]
 MODEL_LABELS = ["FAD-ViT-UNet", "ViT-UNet", "DINOv2-UNet"]  # display names
 
 # All datasets we benchmark (default --tasks)
@@ -70,9 +70,9 @@ DATASET_LABELS = {
 
 
 def get_model(model_name: str, in_chans: int, num_classes: int):
-    if model_name == "cvt13_unet":
-        from models import CvT13UNet
-        return CvT13UNet(in_chans=in_chans, num_classes=num_classes, pretrained_path="")
+    if model_name == "fadvit_unet":
+        from models import FADViTUNet
+        return FADViTUNet(in_chans=in_chans, num_classes=num_classes, pretrained_path="")
     elif model_name == "vit_base_unet":
         from models import ViTBaseUNet
         return ViTBaseUNet(in_chans=in_chans, num_classes=num_classes, pretrained=False)

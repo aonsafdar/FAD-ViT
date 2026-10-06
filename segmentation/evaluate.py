@@ -17,10 +17,10 @@ from metrics import compute_metrics
 
 
 def get_model(args, in_chans=1):
-    ckpt = args.cvt13_weights or str(Path(__file__).resolve().parents[2] / "weights" / "model_best.pth")
-    if args.model == "cvt13_unet":
-        from models import CvT13UNet
-        return CvT13UNet(in_chans=in_chans, num_classes=args.num_classes, pretrained_path=ckpt)
+    ckpt = args.fadvit_weights or str(Path(__file__).resolve().parents[2] / "weights" / "model_best.pth")
+    if args.model == "fadvit_unet":
+        from models import FADViTUNet
+        return FADViTUNet(in_chans=in_chans, num_classes=args.num_classes, pretrained_path=ckpt)
     elif args.model == "vit_base_unet":
         from models import ViTBaseUNet
         return ViTBaseUNet(in_chans=in_chans, num_classes=args.num_classes, pretrained=False)
@@ -67,12 +67,12 @@ def save_overlay(img, pred, target, path, num_classes=3):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", choices=["cvt13_unet", "vit_base_unet", "dinov2_unet", "unet"], default="cvt13_unet")
+    parser.add_argument("--model", choices=["fadvit_unet", "vit_base_unet", "dinov2_unet", "unet"], default="fadvit_unet")
     parser.add_argument("--task", type=str, default="Task01_BrainTumour", help="e.g. Task01_BrainTumour or BUSI")
     parser.add_argument("--data", type=str, default="./data/msd_2d", help="e.g. ./data/busi for BUSI")
     parser.add_argument("--checkpoint", type=str, required=True)
     parser.add_argument("--num-classes", type=int, default=4, help="2 for BUSI")
-    parser.add_argument("--cvt13-weights", type=str, default="")
+    parser.add_argument("--fadvit-weights", type=str, default="")
     parser.add_argument("--save-overlays", action="store_true")
     parser.add_argument("--output", type=str, default="./outputs/seg_eval")
     args = parser.parse_args()

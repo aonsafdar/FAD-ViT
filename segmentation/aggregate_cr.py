@@ -76,7 +76,7 @@ def gap(d, task, arm, tail="def"):
 
 def main():
     d = load()
-    print("\n== #1 Matched-capacity gap (feature-axis cvt13 vs ViT-S/16) ==")
+    print("\n== #1 Matched-capacity gap (feature-axis fadvit vs ViT-S/16) ==")
     print(f"{'Task':22} {'Mod':3} | {'FAD scr':14} {'FAD pt':14} {'gap':6} | "
           f"{'ViT-S scr':14} {'ViT-S pt':14} {'gap':6} | dGap")
     for t in TASKS:

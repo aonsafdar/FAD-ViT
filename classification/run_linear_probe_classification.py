@@ -33,7 +33,7 @@ from train import init_model  # BU-Mamba/train.py
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Linear probing for classification backbones")
-    p.add_argument("--arch", choices=["cvt13-mod", "vit-s16", "dinov2-base"], required=True)
+    p.add_argument("--arch", choices=["fadvit", "vit-s16", "dinov2-base"], required=True)
     p.add_argument("--data-path", type=str, required=True, help="ImageFolder dataset root")
     p.add_argument("--fraction", type=float, default=1.0, help="Train fraction in (0,1], e.g. 0.01, 0.1, 1.0")
     p.add_argument("--epochs", type=int, default=100)
@@ -47,7 +47,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--num-workers", type=int, default=8)
     p.add_argument("--early-stop", type=int, default=20)
-    p.add_argument("--cvt13-weights", type=str, default="")
+    p.add_argument("--fadvit-weights", type=str, default="")
     p.add_argument("--output", type=str, required=True)
     return p.parse_args()
 
@@ -58,10 +58,10 @@ def make_minimal_args(args: argparse.Namespace):
 
     a = A()
     a.arch = args.arch
-    a.cvt13_module = str(BU_ROOT / "models" / "mod_cvt.py") if args.arch == "cvt13-mod" else str(BU_ROOT / "models" / "cls_cvt.py")
-    a.cvt13_ckpt = args.cvt13_weights
+    a.fadvit_module = str(BU_ROOT / "models" / "fadvit_backbone.py") if args.arch == "fadvit" else str(BU_ROOT / "models" / "cls_cvt.py")
+    a.fadvit_ckpt = args.fadvit_weights
     a.cvt13_ckpt_base = ""
-    a.cvt13_ckpt_mod = ""
+    a.fadvit_ckpt = ""
     a.usfm_weights = ""
     a.usfm_preprocessing = False
     a.freeze_backbone = False

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Linear-probe grid with LRs locked from cvt13-mod PathMNIST best: 9 runs per dataset
+# Linear-probe grid with LRs locked from fadvit PathMNIST best: 9 runs per dataset
 # (3 models x 3 fractions, one LR per fraction). Fewer epochs and larger batch for speed.
 #
 # Usage:
@@ -9,7 +9,7 @@
 #   Multiple datasets (one job per dataset, submit separately or in a loop):
 #     for ds in pathmnist dermamnist octmnist; do sbatch run_linear_probe_locked_lr.slurm --export=DATASET=$ds; done
 #
-# Locked LRs (from cvt13-mod best on PathMNIST): fraction 0.01 -> 1e-3, 0.1 -> 1e-3, 1.0 -> 1e-4
+# Locked LRs (from fadvit best on PathMNIST): fraction 0.01 -> 1e-3, 0.1 -> 1e-3, 1.0 -> 1e-4
 #SBATCH --job-name=cls_locked
 #SBATCH --partition=csgpu
 #SBATCH --gres=gpu:1
@@ -34,11 +34,11 @@ OUT_ROOT="${OUT_ROOT:-$ROOT/outputs/classification_linear_probe_locked_lr}"
 DATASET="${DATASET:-pathmnist}"
 DATA_PATH="$DATA_ROOT/$DATASET"
 
-# 9 runs per dataset: 3 models x 3 fractions; LR locked per fraction from cvt13-mod PathMNIST best
-MODELS="${MODELS:-cvt13-mod vit-s16 dinov2-base}"
+# 9 runs per dataset: 3 models x 3 fractions; LR locked per fraction from fadvit PathMNIST best
+MODELS="${MODELS:-fadvit vit-s16 dinov2-base}"
 FRACTIONS="${FRACTIONS:-0.01 0.1 1.0}"
 
-# Locked LR per fraction (from cvt13-mod best on PathMNIST: 0.01/0.1 -> 1e-3, 1.0 -> 1e-4)
+# Locked LR per fraction (from fadvit best on PathMNIST: 0.01/0.1 -> 1e-3, 1.0 -> 1e-4)
 get_lr_for_fraction() {
   case "$1" in
     0.01) echo "1e-3" ;;
@@ -57,7 +57,7 @@ OPTIMIZER="${OPTIMIZER:-adamw}"
 WEIGHT_DECAY="${WEIGHT_DECAY:-1e-4}"
 SEED="${SEED:-0}"
 
-CVT13_WEIGHTS="${CVT13_WEIGHTS:-$ROOT/weights/model_best.pth}"
+FADVIT_WEIGHTS="${FADVIT_WEIGHTS:-$ROOT/weights/model_best.pth}"
 RUN_AGGREGATE="${RUN_AGGREGATE:-1}"
 PLOT_TITLE="${PLOT_TITLE:-Linear Probe (locked LR, 9 runs/dataset)}"
 
@@ -67,8 +67,8 @@ if [ ! -d "$DATA_PATH" ]; then
   echo "ERROR: dataset path missing: $DATA_PATH" >&2
   exit 2
 fi
-if [ ! -f "$CVT13_WEIGHTS" ] && echo "$MODELS" | grep -q "cvt13-mod"; then
-  echo "ERROR: CvT13-mod weights missing: $CVT13_WEIGHTS" >&2
+if [ ! -f "$FADVIT_WEIGHTS" ] && echo "$MODELS" | grep -q "fadvit"; then
+  echo "ERROR: FAD-ViT weights missing: $FADVIT_WEIGHTS" >&2
   exit 2
 fi
 
@@ -98,7 +98,7 @@ for ARCH in $MODELS; do
       --warmup-epochs "$WARMUP_EPOCHS" \
       --early-stop "$EARLY_STOP" \
       --seed "$SEED" \
-      --cvt13-weights "$CVT13_WEIGHTS" \
+      --fadvit-weights "$FADVIT_WEIGHTS" \
       --output "$RUN_OUT"
   done
 done

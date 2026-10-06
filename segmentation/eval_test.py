@@ -38,7 +38,7 @@ def main():
     # backbone's init-time pretrained load (scratch=True) to avoid needing the
     # ImageNet weight files at eval time. Architecture is unaffected.
     args.scratch = True
-    args.cvt13_weights = ""
+    args.fadvit_weights = ""
 
     model = get_model(args, in_chans=in_chans).to(device).eval()
     ckpt = torch.load(args.checkpoint, map_location="cpu")

@@ -16,19 +16,19 @@ import matplotlib.patches as mpatches
 
 # Display names
 ARCH_NAMES = {
-    "cvt13-mod": "FAD-ViT",
+    "fadvit": "FAD-ViT",
     "vit-s16": "ViT-Small/16",
     "dinov2-base": "DINOv2-Base",
 }
 
 ARCH_COLORS = {
-    "cvt13-mod": "#2ecc71",      # Green for FAD-ViT (ours)
+    "fadvit": "#2ecc71",      # Green for FAD-ViT (ours)
     "vit-s16": "#3498db",        # Blue for ViT-Small
     "dinov2-base": "#e74c3c",    # Red for DINOv2
 }
 
 ARCH_MARKERS = {
-    "cvt13-mod": "o",
+    "fadvit": "o",
     "vit-s16": "s",
     "dinov2-base": "^",
 }
@@ -57,7 +57,7 @@ DATASET_NAMES = {
 }
 
 FRACTIONS = [0.01, 0.1, 1.0]
-ARCHS = ["cvt13-mod", "vit-s16", "dinov2-base"]
+ARCHS = ["fadvit", "vit-s16", "dinov2-base"]
 
 
 def load_and_combine(pathmnist_csv: Path, locked_lr_csv: Path) -> pd.DataFrame:

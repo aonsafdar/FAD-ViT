@@ -10,8 +10,8 @@ from pathlib import Path
 from statistics import mean, pstdev
 
 ROOT = Path("/path/to/FAD-ViT/outputs/classification_linear_probe_locked_lr")
-ARCHES = ["cvt13-mod", "vit-s16", "dinov2-base"]
-ARCH_LBL = {"cvt13-mod": "FAD-ViT", "vit-s16": "ViT-S", "dinov2-base": "DINOv2-B"}
+ARCHES = ["fadvit", "vit-s16", "dinov2-base"]
+ARCH_LBL = {"fadvit": "FAD-ViT", "vit-s16": "ViT-S", "dinov2-base": "DINOv2-B"}
 
 
 def load():

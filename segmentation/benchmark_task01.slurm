@@ -9,7 +9,7 @@
 #SBATCH --error=logs/%x_%j.err
 
 # Benchmark: 3 models on Task01_BrainTumour (MSD 2D slices)
-# Models: CvT13-mod, ViT-base (ImageNet-1k), DINOv2-base
+# Models: FAD-ViT, ViT-base (ImageNet-1k), DINOv2-base
 # Early stopping: 20 epochs without improvement
 
 set -euo pipefail
@@ -42,10 +42,10 @@ echo "=== Benchmark: $TASK (num_classes=$NC) ==="
 echo "Early stopping: $EARLY_STOP epochs | Max epochs: $EPOCHS"
 echo ""
 
-# 1. CvT13-mod (our modified model, ImageNet-1k pretrained)
-echo "[1/3] CvT13-UNet (modified)..."
-$PY train.py --model cvt13_unet --task $TASK --data $DATA --num-classes $NC \
-  --cvt13-weights $WEIGHTS --epochs $EPOCHS --early-stop $EARLY_STOP \
+# 1. FAD-ViT (our modified model, ImageNet-1k pretrained)
+echo "[1/3] FADViT-UNet (modified)..."
+$PY train.py --model fadvit_unet --task $TASK --data $DATA --num-classes $NC \
+  --fadvit-weights $WEIGHTS --epochs $EPOCHS --early-stop $EARLY_STOP \
   --output $OUT --wandb --wandb-project Segmentation
 
 # 2. ViT-base (timm, ImageNet-1k pretrained)
@@ -62,4 +62,4 @@ $PY train.py --model dinov2_unet --task $TASK --data $DATA --num-classes $NC \
 
 echo ""
 echo "=== Benchmark complete ==="
-echo "Results in $OUT/$TASK/{cvt13_unet,vit_base_unet,dinov2_unet}/best.pth"
+echo "Results in $OUT/$TASK/{fadvit_unet,vit_base_unet,dinov2_unet}/best.pth"

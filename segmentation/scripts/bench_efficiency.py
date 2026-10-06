@@ -15,7 +15,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 import torch
-from models import CvT13UNet, ViTBaseUNet, DINOv2UNet, XCiTUNet, DaViTUNet, UNet
+from models import FADViTUNet, ViTBaseUNet, DINOv2UNet, XCiTUNet, DaViTUNet, UNet
 
 try:
     from fvcore.nn import FlopCountAnalysis
@@ -30,7 +30,7 @@ ITERS = 50
 WARMUP = 10
 
 CONFIGS = [
-    ("FAD-ViT-UNet (ours)", lambda: CvT13UNet(in_chans=1, num_classes=2, pretrained_path="")),
+    ("FAD-ViT-UNet (ours)", lambda: FADViTUNet(in_chans=1, num_classes=2, pretrained_path="")),
     ("ViT-B-UNet",          lambda: ViTBaseUNet(in_chans=1, num_classes=2, pretrained=False)),
     ("DINOv2-B-UNet",       lambda: DINOv2UNet(in_chans=1, num_classes=2, pretrained=False)),
     ("XCiT-UNet",           lambda: XCiTUNet(in_chans=1, num_classes=2, pretrained=False)),

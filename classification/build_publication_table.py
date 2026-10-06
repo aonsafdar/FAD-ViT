@@ -24,7 +24,7 @@ def main() -> None:
 
     # Display names (FAD-ViT = Feature-Aware, Axis Decoupled ViT)
     arch_label = {
-        "cvt13-mod": "FAD-ViT",
+        "fadvit": "FAD-ViT",
         "vit-s16": "ViT-Small/16",
         "dinov2-base": "DINOv2-Base",
     }

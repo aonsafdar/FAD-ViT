@@ -1,53 +1,23 @@
 """
-CvT-13 encoder for segmentation. Returns multi-scale features for U-Net decoder.
-Uses mod_cvt (cvt13-mod) to match weights/model_best.pth. Loads pretrained ImageNet weights.
+FAD-ViT encoder for segmentation. Returns multi-scale features for the U-Net decoder.
+Wraps the self-contained FAD-ViT backbone (fadvit_backbone.py) and, when a
+pretrained path is given, loads the ImageNet-1K weights that match the released
+checkpoint.
 """
-import importlib.util
-import sys
-from pathlib import Path
 from functools import partial
 
 import torch
 import torch.nn as nn
-from einops import rearrange
 
-# Load mod_cvt from BU-Mamba (matches model_best.pth). Inject BU-Mamba models into sys.modules
-# so mod_cvt's "from models.registry import" resolves correctly.
-BU_MAMBA = Path(__file__).resolve().parents[2] / "BU-Mamba"
-_bu_models_path = BU_MAMBA / "models"
-if str(BU_MAMBA) not in sys.path:
-    sys.path.insert(0, str(BU_MAMBA))
+from .fadvit_backbone import (
+    ConvEmbed,
+    VisionTransformer,
+    QuickGELU,
+    LayerNorm,
+    trunc_normal_,
+)
 
-_orig_models = sys.modules.get("models")
-_orig_registry = sys.modules.get("models.registry")
-import importlib.util as _iu
-_reg_spec = _iu.spec_from_file_location("models.registry", _bu_models_path / "registry.py")
-_reg = _iu.module_from_spec(_reg_spec)
-_reg_spec.loader.exec_module(_reg)
-_bu_models = type(sys)("models")
-_bu_models.registry = _reg
-sys.modules["models"] = _bu_models
-sys.modules["models.registry"] = _reg
-
-# Load as models.mod_cvt so mod_cvt's "from .registry import register_model" works
-_mod_cvt_path = _bu_models_path / "mod_cvt.py"
-_spec = importlib.util.spec_from_file_location("models.mod_cvt", _mod_cvt_path)
-_mod_cvt = importlib.util.module_from_spec(_spec)
-sys.modules["models.mod_cvt"] = _mod_cvt
-_spec.loader.exec_module(_mod_cvt)
-
-if _orig_models is not None:
-    sys.modules["models"] = _orig_models
-if _orig_registry is not None:
-    sys.modules["models.registry"] = _orig_registry
-
-ConvEmbed = _mod_cvt.ConvEmbed
-VisionTransformer = _mod_cvt.VisionTransformer
-QuickGELU = _mod_cvt.QuickGELU
-LayerNorm = _mod_cvt.LayerNorm
-trunc_normal_ = _mod_cvt.trunc_normal_
-
-CVT13_MOD_SPEC = {
+FADVIT_SPEC = {
     "INIT": "trunc_norm",
     "NUM_STAGES": 3,
     "PATCH_SIZE": [7, 3, 3],
@@ -74,16 +44,23 @@ CVT13_MOD_SPEC = {
 }
 
 
-class CvT13Encoder(nn.Module):
+class FADViTEncoder(nn.Module):
     """
-    CvT-13 encoder that returns multi-scale features for segmentation.
+    FAD-ViT encoder that returns multi-scale features for segmentation.
     Outputs: [feat_stage0, feat_stage1, feat_stage2] with dims [64, 192, 384]
     and spatial strides [4, 8, 16] relative to input.
     """
 
-    def __init__(self, in_chans=1, pretrained_path=""):
+    def __init__(self, in_chans=1, pretrained_path="", backbone_token_mode="channel",
+                 sa_tail_depth_last=None):
         super().__init__()
-        self.spec = CVT13_MOD_SPEC
+        self.backbone_token_mode = backbone_token_mode
+        self.spec = dict(FADVIT_SPEC)
+        # Ablation: override the final-stage spatial-attention tail depth (default 5).
+        if sa_tail_depth_last is not None:
+            std = list(self.spec["SA_TAIL_DEPTH"])
+            std[-1] = int(sa_tail_depth_last)
+            self.spec["SA_TAIL_DEPTH"] = std
         self.num_stages = self.spec["NUM_STAGES"]
         in_c = in_chans
         for i in range(self.num_stages):
@@ -108,6 +85,7 @@ class CvT13Encoder(nn.Module):
                 "stride_q": self.spec["STRIDE_Q"][i],
                 "sa_tail_depth": self.spec["SA_TAIL_DEPTH"][i],
                 "sa_tail_heads": self.spec["SA_TAIL_NUM_HEADS"][i],
+                "backbone_token_mode": self.backbone_token_mode,
             }
             stage = VisionTransformer(
                 in_chans=in_c,
@@ -137,7 +115,7 @@ class CvT13Encoder(nn.Module):
             # No kernel averaging: encoder always receives 3ch from InputProjection
             new_sd[k] = v
         missing, unexpected = self.load_state_dict(new_sd, strict=False)
-        print(f"[CvT13Encoder] Loaded pretrained: missing={len(missing)} unexpected={len(unexpected)}")
+        print(f"[FADViTEncoder] Loaded pretrained: missing={len(missing)} unexpected={len(unexpected)}")
 
     def forward(self, x):
         """

@@ -1,11 +1,11 @@
 """
-CvT13-mod encoder + U-Net decoder for 2D medical segmentation.
+FAD-ViT encoder + U-Net decoder for 2D medical segmentation.
 """
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from .cvt13_encoder import CvT13Encoder
+from .fadvit_encoder import FADViTEncoder
 from .input_projection import InputProjection
 
 
@@ -32,17 +32,20 @@ class DecoderBlock(nn.Module):
         return self.conv(x)
 
 
-class CvT13UNet(nn.Module):
+class FADViTUNet(nn.Module):
     """
-    CvT13-mod encoder + U-Net decoder.
+    FAD-ViT encoder + U-Net decoder.
     Encoder dims: [64, 192, 384] at strides [4, 8, 16]
     Uses InputProjection when in_chans != 3 to map to 3ch for pretrained backbone.
     """
 
-    def __init__(self, in_chans=1, num_classes=3, pretrained_path=""):
+    def __init__(self, in_chans=1, num_classes=3, pretrained_path="", backbone_token_mode="channel",
+                 sa_tail_depth_last=None):
         super().__init__()
         self.input_proj = InputProjection(in_chans=in_chans, target_chans=3)
-        self.encoder = CvT13Encoder(in_chans=3, pretrained_path=pretrained_path)
+        self.encoder = FADViTEncoder(in_chans=3, pretrained_path=pretrained_path,
+                                    backbone_token_mode=backbone_token_mode,
+                                    sa_tail_depth_last=sa_tail_depth_last)
         enc_dims = self.encoder.dims  # [64, 192, 384]
 
         # Decoder: 384 -> 192 -> 64 -> num_classes

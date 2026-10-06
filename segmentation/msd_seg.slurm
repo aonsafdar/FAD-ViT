@@ -8,7 +8,7 @@
 #SBATCH --output=logs/%x_%j.out
 #SBATCH --error=logs/%x_%j.err
 
-# MSD 2D segmentation: CvT13-UNet + U-Net baseline
+# MSD 2D segmentation: FADViT-UNet + U-Net baseline
 # Tasks: Task01_BrainTumour (MRI), Task07_Pancreas (CT)
 
 set -euo pipefail
@@ -34,15 +34,15 @@ if [ ! -d "$DATA/Task01_BrainTumour" ]; then
   $PY scripts/process_msd.py --root ./data/msd --output ./data/msd_2d --tasks Task01_BrainTumour Task07_Pancreas
 fi
 
-# 3. Train CvT13-UNet on Task01 (Brain, MRI)
-echo "Training CvT13-UNet on Task01_BrainTumour..."
-$PY train.py --model cvt13_unet --task Task01_BrainTumour --data $DATA --num-classes 4 \
-  --cvt13-weights $WEIGHTS --epochs 100 --output ./outputs/seg --wandb --wandb-project Segmentation
+# 3. Train FADViT-UNet on Task01 (Brain, MRI)
+echo "Training FADViT-UNet on Task01_BrainTumour..."
+$PY train.py --model fadvit_unet --task Task01_BrainTumour --data $DATA --num-classes 4 \
+  --fadvit-weights $WEIGHTS --epochs 100 --output ./outputs/seg --wandb --wandb-project Segmentation
 
-# 4. Train CvT13-UNet on Task07 (Pancreas, CT)
-echo "Training CvT13-UNet on Task07_Pancreas..."
-$PY train.py --model cvt13_unet --task Task07_Pancreas --data $DATA --num-classes 3 \
-  --cvt13-weights $WEIGHTS --epochs 100 --output ./outputs/seg --wandb --wandb-project Segmentation
+# 4. Train FADViT-UNet on Task07 (Pancreas, CT)
+echo "Training FADViT-UNet on Task07_Pancreas..."
+$PY train.py --model fadvit_unet --task Task07_Pancreas --data $DATA --num-classes 3 \
+  --fadvit-weights $WEIGHTS --epochs 100 --output ./outputs/seg --wandb --wandb-project Segmentation
 
 # 5. U-Net baselines
 echo "Training U-Net on Task01..."

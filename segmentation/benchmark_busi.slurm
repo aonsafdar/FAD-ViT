@@ -9,7 +9,7 @@
 #SBATCH --error=logs/%x_%j.err
 
 # Benchmark: 3 models on BUSI segmentation (Dataset_BUSI_with_GT: normal/benign/malignant)
-# Models: CvT13-mod, ViT-base (ImageNet-1k), DINOv2-base
+# Models: FAD-ViT, ViT-base (ImageNet-1k), DINOv2-base
 # Early stopping: 20 epochs without improvement
 
 set -euo pipefail
@@ -38,10 +38,10 @@ echo "=== Benchmark: BUSI segmentation (num_classes=2) ==="
 echo "Data: $DATA | Early stopping: $EARLY_STOP epochs"
 echo ""
 
-# 2. CvT13-mod
-echo "[1/3] CvT13-UNet (modified)..."
-$PY train.py --model cvt13_unet --task $TASK --data $DATA \
-  --cvt13-weights $WEIGHTS --epochs $EPOCHS --early-stop $EARLY_STOP \
+# 2. FAD-ViT
+echo "[1/3] FADViT-UNet (modified)..."
+$PY train.py --model fadvit_unet --task $TASK --data $DATA \
+  --fadvit-weights $WEIGHTS --epochs $EPOCHS --early-stop $EARLY_STOP \
   --output $OUT --wandb --wandb-project Segmentation
 
 # 3. ViT-base
@@ -58,4 +58,4 @@ $PY train.py --model dinov2_unet --task $TASK --data $DATA \
 
 echo ""
 echo "=== Benchmark complete ==="
-echo "Results in $OUT/$TASK/{cvt13_unet,vit_base_unet,dinov2_unet}/best.pth"
+echo "Results in $OUT/$TASK/{fadvit_unet,vit_base_unet,dinov2_unet}/best.pth"

@@ -227,7 +227,7 @@ def save_comparison_figure(
     Publication-quality comparison of multiple models on one sample.
 
     Layout: Input | Ground truth (contour) | Model1 pred (contour) | Model2 pred | Model3 pred ...
-    preds_by_model: dict mapping model name -> prediction array (e.g. {"CvT13": pred, "ViT": pred}).
+    preds_by_model: dict mapping model name -> prediction array (e.g. {"FADViT": pred, "ViT": pred}).
     model_labels: optional list of display names in order (default: keys of preds_by_model).
     """
     import matplotlib

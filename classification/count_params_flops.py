@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
 Count parameters and FLOPS for the three models used in the linear-probe comparison.
-These must match the architectures used for training (cvt13-mod, vit-s16, dinov2-base).
+These must match the architectures used for training (fadvit, vit-s16, dinov2-base).
 
 Parameter count: sum(p.numel() for p in model.parameters()) — same formula everywhere.
 
-Why "Ours" (CvT13) has different param count in classification vs segmentation:
-  - Classification: CvT-13 backbone + linear classification head → ~21.67 M.
-  - Segmentation:  CvT-13 encoder (same backbone) + U-Net decoder (conv blocks, skip fusion) → ~23.1 M.
-  So the CvT13 encoder is the same; the extra ~1.4 M in segmentation is the decoder.
+Why "Ours" (FADViT) has different param count in classification vs segmentation:
+  - Classification: FAD-ViT backbone + linear classification head → ~21.67 M.
+  - Segmentation:  FAD-ViT encoder (same backbone) + U-Net decoder (conv blocks, skip fusion) → ~23.1 M.
+  So the FADViT encoder is the same; the extra ~1.4 M in segmentation is the decoder.
 
 FLOPS: one forward pass at (1, 3, 224, 224) via fvcore FlopCountAnalysis when available.
 """
@@ -57,10 +57,10 @@ def main() -> None:
 
     class Args:
         arch: str = ""
-        cvt13_module: str = ""
-        cvt13_ckpt: str = ""
+        fadvit_module: str = ""
+        fadvit_ckpt: str = ""
         cvt13_ckpt_base: str = ""
-        cvt13_ckpt_mod: str = ""
+        fadvit_ckpt: str = ""
         usfm_weights: str = ""
         usfm_preprocessing: bool = False
         freeze_backbone: bool = False
@@ -76,7 +76,7 @@ def main() -> None:
 
     # Same models as used for linear-probe training (do not change for param/flops consistency with experiments).
     configs = [
-        ("cvt13-mod", "FAD-ViT"),  # Feature-Aware, Axis Decoupled ViT
+        ("fadvit", "FAD-ViT"),  # Feature-Aware, Axis Decoupled ViT
         ("vit-s16", "ViT-Small/16"),
         ("dinov2-base", "DINOv2-Base"),
     ]
@@ -88,7 +88,7 @@ def main() -> None:
 
     for arch, label in configs:
         args.arch = arch
-        args.cvt13_ckpt_mod = str(ckpt_mod) if arch == "cvt13-mod" else ""
+        args.fadvit_ckpt = str(ckpt_mod) if arch == "fadvit" else ""
         model = init_model(args, "cpu", num_classes=num_classes)
         n_params = count_parameters(model)
         n_flops = count_flops(model, input_shape)

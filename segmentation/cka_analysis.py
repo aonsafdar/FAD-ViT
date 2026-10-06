@@ -15,7 +15,7 @@ OUT = Path("/path/to/FAD-ViT/Experiments/seg_scratch_transfer/outputs")
 WEIGHTS = ROOT / "weights" / "model_best.pth"
 FIGDIR = Path(os.environ.get("FIGDIR", "figs"))
 
-from models import CvT13UNet, ViTBaseUNet
+from models import FADViTUNet, ViTBaseUNet
 
 dev = "cuda" if torch.cuda.is_available() else "cpu"
 torch.manual_seed(0)
@@ -54,10 +54,10 @@ def load_sd(path):
 
 @torch.no_grad()
 def feat_axis_feats(pretrained, x):
-    m = CvT13UNet(in_chans=1, num_classes=2,
+    m = FADViTUNet(in_chans=1, num_classes=2,
                   pretrained_path=str(WEIGHTS) if pretrained else "")
     if not pretrained:
-        m.load_state_dict(load_sd(OUT / "BUSI/cvt13_unet/best.pth"), strict=False)
+        m.load_state_dict(load_sd(OUT / "BUSI/fadvit_unet/best.pth"), strict=False)
     m.eval().to(dev)
     h = m.encoder(m.input_proj(x.to(dev)))  # [f0,f1,f2] each (B,C,H,W)
     return [f.mean(dim=(2, 3)).cpu() for f in h]  # GAP -> (B,C) per stage

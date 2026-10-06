@@ -8,13 +8,13 @@ This folder contains the core model architecture for FAD-ViT.
 
 | File | Description |
 |------|-------------|
-| `mod_cvt.py` | Core FAD-ViT architecture (axis-decoupled, channel-primary ViT) |
-| `cvt13_encoder.py` | Encoder wrapper that loads `mod_cvt` and (optional) pretrained weights |
-| `cvt13_unet.py` | FAD-ViT-UNet segmentation model (encoder + U-Net decoder) |
+| `fadvit_backbone.py` | Core FAD-ViT architecture (axis-decoupled, channel-primary ViT) |
+| `fadvit_encoder.py` | Encoder wrapper that loads `fadvit_backbone` and (optional) pretrained weights |
+| `fadvit_unet.py` | FAD-ViT-UNet segmentation model (encoder + U-Net decoder) |
 
 > **Pretrained weights.** ImageNet-1K pretrained weights (~85 MB) are released
 > separately (GitHub Releases / Hugging Face); pass the checkpoint path via
-> `pretrained_path=` / `--cvt13-weights`. See the top-level README.
+> `pretrained_path=` / `--fadvit-weights`. See the top-level README.
 
 ## Architecture Overview
 
@@ -28,8 +28,8 @@ This makes global feature interaction—not spatial attention—the dominant mod
 
 ```python
 # Classification backbone
-from mod_cvt import ConvolutionalVisionTransformer, get_cvt13_config
-config = get_cvt13_config()
+from fadvit_backbone import ConvolutionalVisionTransformer, get_fadvit_config
+config = get_fadvit_config()
 model = ConvolutionalVisionTransformer(**config)
 
 # Load pretrained weights
@@ -38,8 +38,8 @@ ckpt = torch.load("model_best.pth", map_location="cpu")
 model.load_state_dict(ckpt["model"] if "model" in ckpt else ckpt)
 
 # Segmentation (FAD-ViT-UNet)
-from cvt13_unet import CvT13UNet
-seg_model = CvT13UNet(in_chans=3, num_classes=2, pretrained_path="model_best.pth")
+from fadvit_unet import FADViTUNet
+seg_model = FADViTUNet(in_chans=3, num_classes=2, pretrained_path="model_best.pth")
 ```
 
 ## Model Specifications

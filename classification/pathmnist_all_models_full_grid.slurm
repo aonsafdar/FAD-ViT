@@ -24,7 +24,7 @@ DATA_PATH="${DATA_PATH:-/scratch/$USER/breast_ultrasound/dataset/pathmnist}"
 OUT_ROOT="${OUT_ROOT:-$ROOT/outputs/classification_linear_probe_pathmnist_rerun}"
 
 # Full comparison grid.
-MODELS="${MODELS:-cvt13-mod vit-s16 dinov2-base}"
+MODELS="${MODELS:-fadvit vit-s16 dinov2-base}"
 FRACTIONS="${FRACTIONS:-0.01 0.1 1.0}"
 LR_GRID="${LR_GRID:-1e-5 3e-5 1e-4 3e-4 1e-3}"
 
@@ -36,8 +36,8 @@ EARLY_STOP="${EARLY_STOP:-20}"
 BATCH_SIZE="${BATCH_SIZE:-64}"
 SEED="${SEED:-0}"
 
-# Force modified CvT checkpoint.
-CVT13_WEIGHTS="${CVT13_WEIGHTS:-/path/to/FAD-ViT/weights/model_best.pth}"
+# Force FAD-ViT checkpoint.
+FADVIT_WEIGHTS="${FADVIT_WEIGHTS:-/path/to/FAD-ViT/weights/model_best.pth}"
 
 # If 1, run aggregator at end of this same SLURM job.
 RUN_AGGREGATE="${RUN_AGGREGATE:-1}"
@@ -49,8 +49,8 @@ if [ ! -d "$DATA_PATH" ]; then
   echo "ERROR: dataset path missing: $DATA_PATH" >&2
   exit 2
 fi
-if [ ! -f "$CVT13_WEIGHTS" ]; then
-  echo "ERROR: modified CvT weights missing: $CVT13_WEIGHTS" >&2
+if [ ! -f "$FADVIT_WEIGHTS" ]; then
+  echo "ERROR: FAD-ViT weights missing: $FADVIT_WEIGHTS" >&2
   exit 2
 fi
 
@@ -60,7 +60,7 @@ echo "OUT_ROOT=$OUT_ROOT"
 echo "MODELS=$MODELS"
 echo "FRACTIONS=$FRACTIONS"
 echo "LR_GRID=$LR_GRID"
-echo "CVT13_WEIGHTS=$CVT13_WEIGHTS"
+echo "FADVIT_WEIGHTS=$FADVIT_WEIGHTS"
 echo "OPTIMIZER=$OPTIMIZER WD=$WEIGHT_DECAY EPOCHS=$EPOCHS BATCH_SIZE=$BATCH_SIZE"
 echo "========================================================="
 
@@ -83,7 +83,7 @@ for ARCH in $MODELS; do
         --warmup-epochs "$WARMUP_EPOCHS" \
         --early-stop "$EARLY_STOP" \
         --seed "$SEED" \
-        --cvt13-weights "$CVT13_WEIGHTS" \
+        --fadvit-weights "$FADVIT_WEIGHTS" \
         --output "$RUN_OUT"
     done
   done

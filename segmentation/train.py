@@ -22,14 +22,14 @@ except ImportError:
 
 
 def get_model(args, in_chans=1):
-    if args.model == "cvt13_unet":
-        from models import CvT13UNet
+    if args.model == "fadvit_unet":
+        from models import FADViTUNet
         if getattr(args, "scratch", False):
             ckpt = ""  # train from scratch: no ImageNet pretraining
         else:
-            ckpt = args.cvt13_weights or str(Path(__file__).resolve().parents[2] / "weights" / "model_best.pth")
+            ckpt = args.fadvit_weights or str(Path(__file__).resolve().parents[2] / "weights" / "model_best.pth")
         _tail = getattr(args, "sa_tail_depth_last", None)
-        return CvT13UNet(in_chans=in_chans, num_classes=args.num_classes, pretrained_path=ckpt,
+        return FADViTUNet(in_chans=in_chans, num_classes=args.num_classes, pretrained_path=ckpt,
                          backbone_token_mode=getattr(args, "token_mode", "channel"),
                          sa_tail_depth_last=_tail)
     elif args.model == "vit_base_unet":
@@ -59,15 +59,15 @@ def get_model(args, in_chans=1):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", choices=["cvt13_unet", "vit_base_unet", "dinov2_unet", "davit_unet", "xcit_unet", "vit_small_unet", "resnet50_unet", "unet"], default="cvt13_unet")
+    parser.add_argument("--model", choices=["fadvit_unet", "vit_base_unet", "dinov2_unet", "davit_unet", "xcit_unet", "vit_small_unet", "resnet50_unet", "unet"], default="fadvit_unet")
     parser.add_argument("--task", type=str, default="Task01_BrainTumour")
     parser.add_argument("--data", type=str, default="./data/msd_2d")
     parser.add_argument("--epochs", type=int, default=100)
     parser.add_argument("--batch-size", type=int, default=8)
     parser.add_argument("--lr", type=float, default=1e-4)
     parser.add_argument("--num-classes", type=int, default=4, help="Task01=4, Task07=3")
-    parser.add_argument("--cvt13-weights", type=str, default="")
-    parser.add_argument("--scratch", action="store_true", help="Train FAD-ViT (cvt13_unet) from scratch, no ImageNet pretraining")
+    parser.add_argument("--fadvit-weights", type=str, default="")
+    parser.add_argument("--scratch", action="store_true", help="Train FAD-ViT (fadvit_unet) from scratch, no ImageNet pretraining")
     parser.add_argument("--token-mode", type=str, default="channel", choices=["channel", "spatial", "spatial_matched"], help="Backbone global-attention axis: channel (feature-axis, default), spatial (standard spatial-token ablation), or spatial_matched (single-factor control: identical channel-mode Q/K/V, only the attention pooling axis flipped to spatial)")
     parser.add_argument("--sa-tail-depth-last", type=int, default=None, help="Override final-stage spatial-attention tail depth (0 disables the spatial head; default spec=5)")
     parser.add_argument("--output", type=str, default="./outputs/seg")

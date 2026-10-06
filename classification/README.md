@@ -49,7 +49,7 @@ Model parameters and FLOPS: run `python count_params_flops.py` in this directory
 
 ## Other MedMNIST datasets (locked LR, 9 runs per dataset)
 
-LRs are fixed from the best CvT13 PathMNIST settings: 0.01 and 0.1 → 1e-3, 1.0 → 1e-4. Each dataset runs 9 configs (3 models × 3 fractions), 50 epochs, early stopping 15.
+LRs are fixed from the best FADViT PathMNIST settings: 0.01 and 0.1 → 1e-3, 1.0 → 1e-4. Each dataset runs 9 configs (3 models × 3 fractions), 50 epochs, early stopping 15.
 
 **Single dataset** (one job per dataset):
 

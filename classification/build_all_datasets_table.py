@@ -10,7 +10,7 @@ import pandas as pd
 
 # Display names
 ARCH_NAMES = {
-    "cvt13-mod": "FAD-ViT",
+    "fadvit": "FAD-ViT",
     "vit-s16": "ViT-Small/16",
     "dinov2-base": "DINOv2-Base",
 }
@@ -41,7 +41,7 @@ DATASET_NAMES = {
 }
 
 FRACTIONS = [0.01, 0.1, 1.0]
-ARCHS = ["cvt13-mod", "vit-s16", "dinov2-base"]
+ARCHS = ["fadvit", "vit-s16", "dinov2-base"]
 
 
 def load_and_combine(pathmnist_csv: Path, locked_lr_csv: Path) -> pd.DataFrame:
@@ -152,7 +152,7 @@ def main():
     content = []
     content.append("# Classification Linear Probe — All MedMNIST 2D Datasets\n")
     content.append("**Protocol:** Frozen backbone + linear head. Best run per (dataset, model, fraction) by validation accuracy.\n")
-    content.append("**Models:** FAD-ViT (our modified CvT-13), ViT-Small/16, DINOv2-Base.\n")
+    content.append("**Models:** FAD-ViT, ViT-Small/16, DINOv2-Base.\n")
     content.append("**Data fractions:** 1%, 10%, 100% of training data.\n")
     content.append("— = not yet completed (job still running or dataset not processed).\n")
     content.append("\n---\n")

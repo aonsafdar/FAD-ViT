@@ -1,7 +1,7 @@
 # Medical Segmentation Pipeline (MSD)
 
 2D semantic segmentation on Medical Segmentation Decathlon (MSD) using:
-- **Proposed**: CvT13-mod encoder + U-Net decoder (weights: `cvt13_imnet1k_mod.pth`)
+- **Proposed**: FAD-ViT encoder + U-Net decoder (weights: `fadvit_imnet1k.pth`)
 - **Baselines**: U-Net, nnU-Net
 
 ## Tasks
@@ -30,8 +30,8 @@ python scripts/process_msd.py --root ./data/msd --tasks Task01_BrainTumour Task0
 
 ### 3. Train
 ```bash
-# CvT13-UNet (proposed, uses ../weights/cvt13_imnet1k_mod.pth)
-python train.py --model cvt13_unet --task Task01_BrainTumour --data ./data/msd_2d --num-classes 4 --epochs 100
+# FADViT-UNet (proposed, uses ../weights/fadvit_imnet1k.pth)
+python train.py --model fadvit_unet --task Task01_BrainTumour --data ./data/msd_2d --num-classes 4 --epochs 100
 
 # U-Net baseline
 python train.py --model unet --task Task01_BrainTumour --data ./data/msd_2d --num-classes 4 --epochs 100
@@ -39,7 +39,7 @@ python train.py --model unet --task Task01_BrainTumour --data ./data/msd_2d --nu
 
 ### 4. Evaluate & visualize overlays
 ```bash
-python evaluate.py --model cvt13_unet --task Task01_BrainTumour --checkpoint outputs/seg/Task01_BrainTumour/cvt13_unet/best.pth --num-classes 4 --save-overlays
+python evaluate.py --model fadvit_unet --task Task01_BrainTumour --checkpoint outputs/seg/Task01_BrainTumour/fadvit_unet/best.pth --num-classes 4 --save-overlays
 ```
 
 ### 5. nnU-Net baseline (3D, optional)

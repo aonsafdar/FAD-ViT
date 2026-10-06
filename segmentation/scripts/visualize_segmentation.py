@@ -3,7 +3,7 @@
 Generate publication-standard qualitative segmentation figures per dataset and per model.
 
 This script produces results for ONE task and ONE model at a time. Output layout:
-  <output>/<task>/<model>/sample_XXXX.<png|pdf>  (e.g. outputs/qualitative_msd/Task07_Pancreas/cvt13_unet/sample_3701.png)
+  <output>/<task>/<model>/sample_XXXX.<png|pdf>  (e.g. outputs/qualitative_msd/Task07_Pancreas/fadvit_unet/sample_3701.png)
 
 To get results for each dataset and model separately (like outputs/qualitative_msd), run this
 script once per (task, model) with the corresponding checkpoint — e.g. in a loop or batch.
@@ -16,17 +16,17 @@ Produces:
 Usage:
   # BUSI, one model
   python scripts/visualize_segmentation.py --task BUSI --data ./data/busi \\
-    --checkpoint ./outputs/benchmark_busi/BUSI/cvt13_unet/best.pth \\
-    --model cvt13_unet --output ./outputs/qualitative_busi --num-samples 24
+    --checkpoint ./outputs/benchmark_busi/BUSI/fadvit_unet/best.pth \\
+    --model fadvit_unet --output ./outputs/qualitative_busi --num-samples 24
 
   # MSD task, one model (e.g. qualitative_msd-style: one dir per task per model)
   python scripts/visualize_segmentation.py --task Task07_Pancreas --data ./data/msd_2d \\
-    --checkpoint ./outputs/benchmark_msd/Task07_Pancreas/cvt13_unet/best.pth \\
-    --model cvt13_unet --output ./outputs/qualitative_msd --num-samples 20
+    --checkpoint ./outputs/benchmark_msd/Task07_Pancreas/fadvit_unet/best.pth \\
+    --model fadvit_unet --output ./outputs/qualitative_msd --num-samples 20
 
   # Loop to get all tasks × models (qualitative_msd layout)
   for TASK in Task07_Pancreas Task09_Spleen; do
-    for MODEL in cvt13_unet vit_base_unet dinov2_unet; do
+    for MODEL in fadvit_unet vit_base_unet dinov2_unet; do
       python scripts/visualize_segmentation.py --task $TASK --data ./data/msd_2d \\
         --checkpoint ./outputs/benchmark_msd/$TASK/$MODEL/best.pth --model $MODEL \\
         --output ./outputs/qualitative_msd --num-samples 20
@@ -47,10 +47,10 @@ from visualization import save_qualitative_figure, save_qualitative_grid
 
 
 def get_model(args, in_chans=1):
-    if args.model == "cvt13_unet":
-        from models import CvT13UNet
-        # Encoder is mod_cvt (CvT13Encoder in cvt13_encoder.py). Full state loaded from --checkpoint below.
-        return CvT13UNet(in_chans=in_chans, num_classes=args.num_classes, pretrained_path=args.cvt13_weights or "")
+    if args.model == "fadvit_unet":
+        from models import FADViTUNet
+        # Encoder is fadvit_backbone (FADViTEncoder in fadvit_encoder.py). Full state loaded from --checkpoint below.
+        return FADViTUNet(in_chans=in_chans, num_classes=args.num_classes, pretrained_path=args.fadvit_weights or "")
     elif args.model == "vit_base_unet":
         from models import ViTBaseUNet
         return ViTBaseUNet(in_chans=in_chans, num_classes=args.num_classes, pretrained=False)
@@ -65,12 +65,12 @@ def get_model(args, in_chans=1):
 
 def main():
     parser = argparse.ArgumentParser(description="Publication-quality segmentation visualization")
-    parser.add_argument("--model", choices=["cvt13_unet", "vit_base_unet", "dinov2_unet", "unet"], default="cvt13_unet")
+    parser.add_argument("--model", choices=["fadvit_unet", "vit_base_unet", "dinov2_unet", "unet"], default="fadvit_unet")
     parser.add_argument("--task", type=str, default="BUSI", help="BUSI or MSD task name")
     parser.add_argument("--data", type=str, default="./data/busi", help="Path to prepared data")
     parser.add_argument("--checkpoint", type=str, required=True, help="Path to best.pth (or checkpoint)")
     parser.add_argument("--num-classes", type=int, default=2, dest="num_classes")
-    parser.add_argument("--cvt13-weights", type=str, default="")
+    parser.add_argument("--fadvit-weights", type=str, default="")
     parser.add_argument("--output", type=str, default="./outputs/qualitative", help="Output directory")
     parser.add_argument("--num-samples", type=int, default=20, help="Number of test samples to visualize")
     parser.add_argument("--split", type=str, default="test", choices=["train", "val", "test"])

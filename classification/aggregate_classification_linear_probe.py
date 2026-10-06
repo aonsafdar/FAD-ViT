@@ -46,7 +46,7 @@ def _safe_name(s: str) -> str:
 
 
 # Display names for figure legends (FAD-ViT = Feature-Aware, Axis Decoupled ViT)
-ARCH_DISPLAY_NAMES = {"cvt13-mod": "FAD-ViT", "vit-s16": "ViT-Small/16", "dinov2-base": "DINOv2-Base"}
+ARCH_DISPLAY_NAMES = {"fadvit": "FAD-ViT", "vit-s16": "ViT-Small/16", "dinov2-base": "DINOv2-Base"}
 
 
 def plot_curve(best: pd.DataFrame, y_col: str, y_label: str, out_png: Path, out_pdf: Path, title: str):

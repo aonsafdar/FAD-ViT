@@ -1,7 +1,7 @@
 #!/bin/bash
 # Camera-ready experiment sweep for ACCV #1310 commitments.
 #   #1 Matched-capacity transfer-gap grid across all 11 segmentation tasks:
-#      FAD-ViT feature-axis (cvt13 channel) vs ViT-S/16 spatial baseline,
+#      FAD-ViT feature-axis (fadvit channel) vs ViT-S/16 spatial baseline,
 #      scratch + pretrained, seeds 0/1/2.
 #   #2 2x2 spatial-extractor ablation (SATAIL=0) on representative US/MRI/CT:
 #      {feature(channel), spatial} x {tail-on(done), tail-off}, scratch+pretrained, seeds 0/1/2.

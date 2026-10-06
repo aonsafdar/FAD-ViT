@@ -25,17 +25,17 @@ OUT_ROOT="${OUT_ROOT:-$ROOT/outputs/classification_linear_probe_locked_lr}"
 
 DATASET="${DATASET:?set DATASET}"
 SEED="${SEED:?set SEED}"
-MODELS="${MODELS:-cvt13-mod vit-s16 dinov2-base}"
+MODELS="${MODELS:-fadvit vit-s16 dinov2-base}"
 FRACTIONS="${FRACTIONS:-0.01 0.1 1.0}"
 EPOCHS="${EPOCHS:-50}"; WARMUP_EPOCHS="${WARMUP_EPOCHS:-5}"; EARLY_STOP="${EARLY_STOP:-15}"
 BATCH_SIZE="${BATCH_SIZE:-128}"; OPTIMIZER="${OPTIMIZER:-adamw}"; WEIGHT_DECAY="${WEIGHT_DECAY:-1e-4}"
-CVT13_WEIGHTS="${CVT13_WEIGHTS:-$ROOT/weights/model_best.pth}"
+FADVIT_WEIGHTS="${FADVIT_WEIGHTS:-$ROOT/weights/model_best.pth}"
 
 lr_for_frac() { case "$1" in 0.01) echo 1e-3;; 0.1) echo 1e-3;; 1.0) echo 1e-4;; *) echo 1e-4;; esac; }
 
 DATA_PATH="$DATA_ROOT/$DATASET"
 [ -d "$DATA_PATH" ] || { echo "ERROR: missing $DATA_PATH" >&2; exit 2; }
-[ -f "$CVT13_WEIGHTS" ] || { echo "ERROR: missing weights $CVT13_WEIGHTS" >&2; exit 2; }
+[ -f "$FADVIT_WEIGHTS" ] || { echo "ERROR: missing weights $FADVIT_WEIGHTS" >&2; exit 2; }
 mkdir -p "$EXP_ROOT/logs"
 
 echo "=== CLS multi-seed: dataset=$DATASET seed=$SEED ==="
@@ -51,7 +51,7 @@ for ARCH in $MODELS; do
       --epochs "$EPOCHS" --batch-size "$BATCH_SIZE" --lr "$LR" \
       --optimizer "$OPTIMIZER" --weight-decay "$WEIGHT_DECAY" \
       --warmup-epochs "$WARMUP_EPOCHS" --early-stop "$EARLY_STOP" \
-      --seed "$SEED" --cvt13-weights "$CVT13_WEIGHTS" --output "$RUN_OUT"
+      --seed "$SEED" --fadvit-weights "$FADVIT_WEIGHTS" --output "$RUN_OUT"
   done
 done
 echo "=== DONE $DATASET seed=$SEED ==="

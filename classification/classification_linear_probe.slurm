@@ -9,7 +9,7 @@
 #SBATCH --error=/scratch/%u/breast_ultrasound/Experiments/logs/%x_%j.err
 
 # Classification linear-probe data-efficiency benchmark:
-# - Backbones: cvt13-mod, vit-s16, dinov2-base
+# - Backbones: fadvit, vit-s16, dinov2-base
 # - Train fractions: 1%, 10%, 100%
 # - Train only linear classifier head
 #
@@ -31,7 +31,7 @@ OUT_ROOT="$ROOT/outputs/classification_linear_probe"
 DATA_ROOT="${DATA_ROOT:-$ROOT/dataset}"
 DATA_PATH="${DATA_PATH:-}"  # Optional single-dataset override
 DATASETS="${DATASETS:-pathmnist dermamnist octmnist pneumoniamnist retinamnist breastmnist bloodmnist tissuemnist organamnist organcmnist organsmnist}"
-MODELS="${MODELS:-cvt13-mod vit-s16 dinov2-base}"
+MODELS="${MODELS:-fadvit vit-s16 dinov2-base}"
 FRACTIONS="${FRACTIONS:-0.01 0.1 1.0}"
 LR_GRID="${LR_GRID:-1e-5 3e-5 1e-4 3e-4 1e-3}"
 OPTIMIZER="${OPTIMIZER:-adamw}"
@@ -41,7 +41,7 @@ WARMUP_EPOCHS="${WARMUP_EPOCHS:-5}"
 EARLY_STOP="${EARLY_STOP:-20}"
 BATCH_SIZE="${BATCH_SIZE:-64}"
 SEED="${SEED:-0}"
-CVT13_WEIGHTS="${CVT13_WEIGHTS:-$ROOT/weights/model_best.pth}"
+FADVIT_WEIGHTS="${FADVIT_WEIGHTS:-$ROOT/weights/model_best.pth}"
 
 mkdir -p "$OUT_ROOT"
 
@@ -87,7 +87,7 @@ for DS in $DATASETS; do
           --warmup-epochs "$WARMUP_EPOCHS" \
           --early-stop "$EARLY_STOP" \
           --seed "$SEED" \
-          --cvt13-weights "$CVT13_WEIGHTS" \
+          --fadvit-weights "$FADVIT_WEIGHTS" \
           --output "$RUN_OUT"
       done
     done

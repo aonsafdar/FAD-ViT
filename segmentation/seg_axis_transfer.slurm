@@ -9,7 +9,7 @@
 #SBATCH --error=logs/%x_%j.err
 
 # In-place axis-swap transfer-gap runs.
-# Trains cvt13_unet (FAD-ViT) with a chosen global-attention axis and init, then
+# Trains fadvit_unet (FAD-ViT) with a chosen global-attention axis and init, then
 # evaluates on the held-out TEST split and appends a structured result line.
 #   Usage: TASK=Task02_Heart TMODE=channel INIT=pretrained sbatch seg_axis_transfer.slurm
 set -euo pipefail
@@ -41,17 +41,17 @@ mkdir -p logs "$OUT" ./outputs/axis_transfer
 if [ "$INIT" = "scratch" ]; then
   EXTRA="--scratch"
 else
-  EXTRA="--cvt13-weights $WEIGHTS"
+  EXTRA="--fadvit-weights $WEIGHTS"
 fi
 
 echo "=== TRAIN $TASK tmode=$TMODE init=$INIT seed=$SEED tail=${SATAIL:-default} epochs=$EPOCHS early=$EARLY_STOP ==="
-$PY train.py --model cvt13_unet --task "$TASK" --data "$DATA" \
+$PY train.py --model fadvit_unet --task "$TASK" --data "$DATA" \
   --token-mode "$TMODE" $EXTRA $TAILARG --epochs "$EPOCHS" --early-stop "$EARLY_STOP" \
   --seed "$SEED" --output "$OUT"
 
-CKPT="$OUT/$TASK/cvt13_unet/best.pth"
+CKPT="$OUT/$TASK/fadvit_unet/best.pth"
 echo "=== EVAL held-out TEST ==="
-$PY eval_test.py --model cvt13_unet --task "$TASK" --data "$DATA" \
+$PY eval_test.py --model fadvit_unet --task "$TASK" --data "$DATA" \
   --token-mode "$TMODE" $TAILARG --seed "$SEED" --checkpoint "$CKPT" | tee "$OUT/test.txt"
 
 DICE=$(grep -oP 'Dice=\K[0-9.]+' "$OUT/test.txt" | head -1)

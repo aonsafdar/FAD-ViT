@@ -60,14 +60,19 @@ Tested with PyTorch ≥ 1.10 on NVIDIA V100 / A100 / L40S / H100.
 
 ## Pretrained weights
 
-The ImageNet-1K pretrained FAD-ViT checkpoint (~85 MB) is released separately via
-GitHub Releases / Hugging Face. Point the training code at it:
+The ImageNet-1K pretrained FAD-ViT backbone (~85 MB, 1000-class head included) is
+released on GitHub Releases:
+[**v1.0.0 → `fadvit_imnet1k.pth`**](https://github.com/aonsafdar/FAD-ViT/releases/tag/v1.0.0)
+(`sha256: 015ef4cd96b05f47fc87b232ef65e4a75ff91f6334ea114882958575d7dd9a5e`).
 
 ```bash
+# download the checkpoint
+gh release download v1.0.0 -R aonsafdar/FAD-ViT -p fadvit_imnet1k.pth
+
 # segmentation
-python segmentation/train.py --model fadvit_unet --fadvit-weights /path/to/model_best.pth ...
+python segmentation/train.py --model fadvit_unet --fadvit-weights fadvit_imnet1k.pth ...
 # backbone
-python -c "from backbone.fadvit_unet import FADViTUNet; FADViTUNet(pretrained_path='/path/to/model_best.pth')"
+python -c "from backbone.fadvit_unet import FADViTUNet; FADViTUNet(pretrained_path='fadvit_imnet1k.pth')"
 ```
 
 Use `--scratch` to train the FAD-ViT backbone from random initialization (the from-scratch control).
